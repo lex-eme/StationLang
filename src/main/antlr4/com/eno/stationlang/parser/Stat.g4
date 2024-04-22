@@ -7,7 +7,6 @@ funcDecl : ID LPAR parameters? RPAR (COLON type)? block;
 
 type : BOOLEANTYPE
      | NUMBERTYPE
-     | DEVICETYPE
      ;
 
 parameters : varDef(COMMA varDef)*;
@@ -20,20 +19,20 @@ statement : IF LPAR condition=expression RPAR block (ELSE block)?   #ifStmt
           | RETURN expression SEMICOLON                             #returnStmt
           ;
 
-expression  : LPAR expression RPAR                                  #parenExpr
-            | ID                                                    #varExpr
-            | ID LPAR (expression (COMMA expression)*)? RPAR        #callExpr
-            | QUOTES ID QUOTES                                      #propertyExpr
-            | NUMBER                                                #numberExpr
-            | MINUS expression                                      #unaryMinusExpr
-            | expression op=(TIMES | DIVIDE | MODULO) expression    #multDivideExpr
-            | expression op=(PLUS | MINUS) expression               #addSubExpr
-            | TRUE                                                  #trueExpr
-            | FALSE                                                 #falseExpr
-            | expression op=(EQUAL | DIFF) expression               #equalExpr
-            | expression op=(LT | GT | LTE | GTE) expression        #compExpr
-            | expression op=(AND | OR) expression                   #logicExpr
-            | NOT expression                                        #notExpr
+expression  : LPAR expression RPAR                                                                  #parenExpr
+            | ID                                                                                    #varExpr
+            | ID LPAR (expression (COMMA expression)*)? RPAR                                        #callExpr
+            | QUOTES ID QUOTES                                                                      #propertyExpr
+            | NUMBER                                                                                #numberExpr
+            | MINUS expression                                                                      #unaryMinusExpr
+            | leftOperand=expression operator=(TIMES | DIVIDE) rightOperand=expression              #multDivideExpr
+            | leftOperand=expression operator=(PLUS | MINUS) rightOperand=expression                #addSubExpr
+            | TRUE                                                                                  #trueExpr
+            | FALSE                                                                                 #falseExpr
+            | leftOperand=expression operator=(EQUAL | DIFF) rightOperand=expression                #equalExpr
+            | leftOperand=expression operator=(LT | GT | LTE | GTE) rightOperand=expression         #compExpr
+            | leftOperand=expression operator=(AND | OR) rightOperand=expression                    #logicExpr
+            | NOT expression                                                                        #notExpr
             ;
 
 
@@ -55,7 +54,6 @@ PLUS: '+';
 MINUS: '-';
 TIMES: '*';
 DIVIDE: '/';
-MODULO: '%';
 AFFECT: '=';
 
 EQUAL: '==';
@@ -73,7 +71,6 @@ OR: '||';
 
 BOOLEANTYPE: 'boolean';
 NUMBERTYPE: 'number';
-DEVICETYPE: 'device';
 
 IF: 'if';
 ELSE: 'else';

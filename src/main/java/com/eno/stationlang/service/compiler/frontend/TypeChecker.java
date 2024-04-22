@@ -1,161 +1,227 @@
 package com.eno.stationlang.service.compiler.frontend;
 
+import com.eno.stationlang.parser.StatBaseListener;
 import com.eno.stationlang.parser.StatParser;
-import com.eno.stationlang.parser.StatVisitor;
-import org.antlr.v4.runtime.tree.ErrorNode;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.RuleNode;
-import org.antlr.v4.runtime.tree.TerminalNode;
+import com.eno.stationlang.service.compiler.error.SemanticErrorListener;
+import com.eno.stationlang.service.compiler.frontend.symboltable.Function;
+import com.eno.stationlang.service.compiler.frontend.symboltable.Scope;
+import com.eno.stationlang.service.compiler.frontend.symboltable.Symbol;
+import com.eno.stationlang.service.compiler.frontend.symboltable.Variable;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
-public class TypeChecker implements StatVisitor<Void> {
-  @Override
-  public Void visitParenExpr(StatParser.ParenExprContext ctx) {
-    return null;
+public class TypeChecker extends StatBaseListener {
+
+  private final ParseTreeProperty<StatType> types;
+  private final SemanticErrorListener listener;
+  private Scope currentScope;
+
+  public TypeChecker(SemanticErrorListener listener, Scope globalScope) {
+    this(new ParseTreeProperty<>(), listener, globalScope);
+  }
+
+  public TypeChecker(
+      ParseTreeProperty<StatType> types, SemanticErrorListener listener, Scope globalScope) {
+    this.types = types;
+    this.listener = listener;
+    this.currentScope = globalScope;
   }
 
   @Override
-  public Void visitTrueExpr(StatParser.TrueExprContext ctx) {
-    return null;
+  public void exitVarDef(StatParser.VarDefContext ctx) {
+    StatType type;
+
+    if (ctx.type().BOOLEANTYPE() != null) type = StatType.BOOLEAN;
+    else if (ctx.type().NUMBERTYPE() != null) type = StatType.NUMBER;
+    else type = null;
+
+    Variable variable = new Variable(ctx.ID().getText(), type);
+    currentScope.define(variable);
   }
 
   @Override
-  public Void visitNumberExpr(StatParser.NumberExprContext ctx) {
-    return null;
+  public void enterFuncDecl(StatParser.FuncDeclContext ctx) {
+    StatType type;
+
+    if (ctx.type() != null) {
+      if (ctx.type().BOOLEANTYPE() != null) type = StatType.BOOLEAN;
+      else if (ctx.type().NUMBERTYPE() != null) type = StatType.NUMBER;
+      else type = null;
+    } else {
+      type = StatType.VOID;
+    }
+
+    Function function = new Function(ctx.ID().getText(), type, currentScope);
+    currentScope.define(function);
+    currentScope = function;
   }
 
   @Override
-  public Void visitAssignStmt(StatParser.AssignStmtContext ctx) {
-    return null;
+  public void exitFuncDecl(StatParser.FuncDeclContext ctx) {
+    currentScope = currentScope.getParentScope();
   }
 
   @Override
-  public Void visitProgram(StatParser.ProgramContext ctx) {
-    System.out.println("Program visited");
-    return null;
+  public void exitParenExpr(StatParser.ParenExprContext ctx) {
+    types.put(ctx, types.get(ctx.expression()));
   }
 
   @Override
-  public Void visitDeclaration(StatParser.DeclarationContext ctx) {
-    return null;
+  public void exitVarExpr(StatParser.VarExprContext ctx) {
+    Symbol symbol = currentScope.resolve(ctx.ID().getText());
+
+    if (symbol == null) {
+      reportSemanticError(ctx, "variable '" + ctx.ID().getText() + "' is not defined.");
+      types.put(ctx, StatType.VOID);
+      return;
+    }
+
+    types.put(ctx, symbol.getType());
   }
 
   @Override
-  public Void visitType(StatParser.TypeContext ctx) {
-    return null;
+  public void exitCallExpr(StatParser.CallExprContext ctx) {
+    Symbol symbol = currentScope.resolve(ctx.ID().getText());
+
+    if (symbol == null) {
+      reportSemanticError(ctx, "function '" + ctx.ID().getText() + "' is not defined.");
+      types.put(ctx, StatType.VOID);
+      return;
+    }
+
+    if (symbol instanceof Function function) {
+      types.put(ctx, function.getType());
+      System.out.println("TODO: check arguments type and count.");
+      return;
+    }
+
+    reportSemanticError(ctx, "can only call functions.");
   }
 
   @Override
-  public Void visitExprStmt(StatParser.ExprStmtContext ctx) {
-    return null;
+  public void exitPropertyExpr(StatParser.PropertyExprContext ctx) {
+    types.put(ctx, StatType.PROPERTY);
   }
 
   @Override
-  public Void visitUnaryMinusExpr(StatParser.UnaryMinusExprContext ctx) {
-    return null;
+  public void exitNumberExpr(StatParser.NumberExprContext ctx) {
+    types.put(ctx, StatType.NUMBER);
   }
 
   @Override
-  public Void visitCompExpr(StatParser.CompExprContext ctx) {
-    return null;
+  public void exitUnaryMinusExpr(StatParser.UnaryMinusExprContext ctx) {
+    var expr = ctx.expression();
+    if (types.get(expr) != StatType.NUMBER) {
+      reportSemanticError(expr, "expression following '-' must be of type NUMBER.");
+    }
+
+    types.put(ctx, StatType.NUMBER);
   }
 
   @Override
-  public Void visitLogicExpr(StatParser.LogicExprContext ctx) {
-    return null;
+  public void exitMultDivideExpr(StatParser.MultDivideExprContext ctx) {
+    checkNumberOperands(ctx.leftOperand, ctx.rightOperand, ctx.operator);
+    types.put(ctx, StatType.NUMBER);
   }
 
   @Override
-  public Void visitMultDivideExpr(StatParser.MultDivideExprContext ctx) {
-    return null;
+  public void exitAddSubExpr(StatParser.AddSubExprContext ctx) {
+    checkNumberOperands(ctx.leftOperand, ctx.rightOperand, ctx.operator);
+    types.put(ctx, StatType.NUMBER);
   }
 
   @Override
-  public Void visitPropertyExpr(StatParser.PropertyExprContext ctx) {
-    return null;
+  public void exitTrueExpr(StatParser.TrueExprContext ctx) {
+    types.put(ctx, StatType.BOOLEAN);
   }
 
   @Override
-  public Void visitFalseExpr(StatParser.FalseExprContext ctx) {
-    return null;
+  public void exitFalseExpr(StatParser.FalseExprContext ctx) {
+    types.put(ctx, StatType.BOOLEAN);
   }
 
   @Override
-  public Void visitReturnStmt(StatParser.ReturnStmtContext ctx) {
-    return null;
+  public void exitEqualExpr(StatParser.EqualExprContext ctx) {
+    var left = ctx.leftOperand;
+    var right = ctx.rightOperand;
+    var operator = ctx.operator;
+    var leftType = types.get(left);
+    var rightType = types.get(right);
+
+    checkNumberOrBooleanOperands(left, right, operator);
+    if (leftType != rightType) {
+      reportSemanticError(
+              left,
+              "both operands of '" + operator.getText() + "' expression must be of the same type.");
+    }
+
+    types.put(ctx, StatType.BOOLEAN);
   }
 
   @Override
-  public Void visitAddSubExpr(StatParser.AddSubExprContext ctx) {
-    return null;
+  public void exitCompExpr(StatParser.CompExprContext ctx) {
+    checkNumberOperands(ctx.leftOperand, ctx.rightOperand, ctx.operator);
+    types.put(ctx, StatType.BOOLEAN);
   }
 
   @Override
-  public Void visitNotExpr(StatParser.NotExprContext ctx) {
-    return null;
+  public void exitLogicExpr(StatParser.LogicExprContext ctx) {
+    checkBooleanOperands(ctx.leftOperand, ctx.rightOperand, ctx.operator);
+    types.put(ctx, StatType.BOOLEAN);
   }
 
   @Override
-  public Void visitIfStmt(StatParser.IfStmtContext ctx) {
-    return null;
+  public void exitNotExpr(StatParser.NotExprContext ctx) {
+    var expr = ctx.expression();
+    if (types.get(expr) != StatType.BOOLEAN) {
+      reportSemanticError(expr, "expression following '!' must be of type BOOLEAN.");
+    }
+
+    types.put(ctx, StatType.BOOLEAN);
   }
 
-  @Override
-  public Void visitFuncDecl(StatParser.FuncDeclContext ctx) {
-    return null;
+  private void checkNumberOperands(
+          StatParser.ExpressionContext left, StatParser.ExpressionContext right, Token operator) {
+    if (types.get(left) != StatType.NUMBER) {
+      reportSemanticError(
+              left, "left operand of '" + operator.getText() + "' expression must be of type NUMBER.");
+    }
+
+    if (types.get(right) != StatType.NUMBER) {
+      reportSemanticError(
+              right,
+              "right operand of '" + operator.getText() + "' expression must be of type NUMBER.");
+    }
   }
 
-  @Override
-  public Void visitVarDef(StatParser.VarDefContext ctx) {
-    return null;
+  private void checkBooleanOperands(StatParser.ExpressionContext left, StatParser.ExpressionContext right, Token operator) {
+    if (types.get(left) != StatType.BOOLEAN) {
+      reportSemanticError(
+              left, "left operand of '" + operator.getText() + "' expression must be of type BOOLEAN.");
+    }
+
+    if (types.get(right) != StatType.BOOLEAN) {
+      reportSemanticError(
+              right,
+              "right operand of '" + operator.getText() + "' expression must be of type BOOLEAN.");
+    }
   }
 
-  @Override
-  public Void visitBlock(StatParser.BlockContext ctx) {
-    return null;
+  private void checkNumberOrBooleanOperands(StatParser.ExpressionContext left, StatParser.ExpressionContext right, Token operator) {
+    if (types.get(left) != StatType.BOOLEAN && types.get(left) != StatType.NUMBER) {
+      reportSemanticError(
+              left, "left operand of '" + operator.getText() + "' expression must be of type NUMBER or BOOLEAN.");
+    }
+
+    if (types.get(right) != StatType.BOOLEAN && types.get(right) != StatType.NUMBER) {
+      reportSemanticError(
+              right,
+              "right operand of '" + operator.getText() + "' expression must be of type NUMBER or BOOLEAN.");
+    }
   }
 
-  @Override
-  public Void visitVarDecl(StatParser.VarDeclContext ctx) {
-    return null;
-  }
-
-  @Override
-  public Void visitParameters(StatParser.ParametersContext ctx) {
-    return null;
-  }
-
-  @Override
-  public Void visitEqualExpr(StatParser.EqualExprContext ctx) {
-    return null;
-  }
-
-  @Override
-  public Void visitVarExpr(StatParser.VarExprContext ctx) {
-    return null;
-  }
-
-  @Override
-  public Void visitCallExpr(StatParser.CallExprContext ctx) {
-    return null;
-  }
-
-  @Override
-  public Void visit(ParseTree tree) {
-    return null;
-  }
-
-  @Override
-  public Void visitChildren(RuleNode node) {
-    return null;
-  }
-
-  @Override
-  public Void visitTerminal(TerminalNode node) {
-    return null;
-  }
-
-  @Override
-  public Void visitErrorNode(ErrorNode node) {
-    return null;
+  private void reportSemanticError(ParserRuleContext ctx, String message) {
+    listener.semanticError(ctx.start.getLine(), ctx.start.getCharPositionInLine(), message);
   }
 }

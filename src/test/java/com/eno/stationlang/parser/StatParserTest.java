@@ -191,17 +191,6 @@ class StatParserTest {
     }
 
     @Test
-    void moduloExprTest() {
-      String code = "11 % 23";
-      var parser = getParser(code);
-      var ctx = parser.expression();
-
-      var multDivideExprCtx = assertInstanceOf(StatParser.MultDivideExprContext.class, ctx);
-      assertEquals("11", multDivideExprCtx.expression(0).getText());
-      assertEquals("23", multDivideExprCtx.expression(1).getText());
-    }
-
-    @Test
     void addExprTest() {
       String code = "11 + 23";
       var parser = getParser(code);

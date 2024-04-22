@@ -9,12 +9,16 @@ import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.atn.ATNConfigSet;
 import org.antlr.v4.runtime.dfa.DFA;
 
-public class ErrorListener implements ANTLRErrorListener {
+public class ErrorListener implements ANTLRErrorListener, SemanticErrorListener {
 
   private final List<CompilationError> errors;
 
   public ErrorListener(List<CompilationError> errors) {
     this.errors = errors;
+  }
+
+  public boolean hasError() {
+    return !errors.isEmpty();
   }
 
   @Override
@@ -60,5 +64,10 @@ public class ErrorListener implements ANTLRErrorListener {
       int prediction,
       ATNConfigSet configs) {
     errors.add(new CompilationError(startIndex, stopIndex, ErrorType.CONTEXT, null));
+  }
+
+  @Override
+  public void semanticError(int line, int charPosInLine, String message) {
+    errors.add(new CompilationError(line, charPosInLine, ErrorType.SEMANTIC, message));
   }
 }

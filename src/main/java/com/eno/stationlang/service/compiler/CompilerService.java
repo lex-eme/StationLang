@@ -5,11 +5,13 @@ import com.eno.stationlang.parser.StatParser;
 import com.eno.stationlang.service.compiler.error.CompilationError;
 import com.eno.stationlang.service.compiler.error.ErrorListener;
 import com.eno.stationlang.service.compiler.frontend.TypeChecker;
+import com.eno.stationlang.service.compiler.frontend.symboltable.GlobalScope;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -30,12 +32,17 @@ public class CompilerService {
     StatParser parser = new StatParser(tokens);
     parser.removeErrorListeners();
     parser.addErrorListener(listener);
-
     ParseTree tree = parser.program();
-    TypeChecker checker = new TypeChecker();
-    tree.accept(checker);
 
-    // TODO: check if errors contains any AMBIGUITY or CONTEXT error
+    if (listener.hasError()) {
+      // TODO: check if errors contains any AMBIGUITY or CONTEXT error
+      return new CompilationResult("Not yet compiled.", errors);
+    }
+
+    GlobalScope globalScope = new GlobalScope();
+    TypeChecker typeChecker = new TypeChecker(listener, globalScope);
+    ParseTreeWalker walker = new ParseTreeWalker();
+    walker.walk(typeChecker, tree);
 
     return new CompilationResult("Not yet compiled.", errors);
   }
