@@ -94,7 +94,9 @@ class TypeCheckerTest {
   }
 
   @ParameterizedTest
-  @EnumSource(value = StatType.class, names = {"NUMBER"})
+  @EnumSource(
+      value = StatType.class,
+      names = {"NUMBER"})
   void exitUnaryMinusExprSubExprValidTypeTest(StatType type) {
     StatParser.ExpressionContext subExpr = createSubExpr();
     StatParser.UnaryMinusExprContext expr = mock(StatParser.UnaryMinusExprContext.class);
@@ -108,7 +110,9 @@ class TypeCheckerTest {
   }
 
   @ParameterizedTest
-  @EnumSource(value = StatType.class, names = {"NUMBER"})
+  @EnumSource(
+      value = StatType.class,
+      names = {"NUMBER"})
   void exitMultDivideExprValidTypeTest(StatType type) {
     StatParser.ExpressionContext leftSubExpr = createSubExpr();
     StatParser.ExpressionContext rightSubExpr = createSubExpr();
@@ -126,8 +130,8 @@ class TypeCheckerTest {
 
   @ParameterizedTest
   @EnumSource(
-          value = StatType.class,
-          names = {"BOOLEAN", "VOID", "PROPERTY"})
+      value = StatType.class,
+      names = {"BOOLEAN", "VOID", "PROPERTY"})
   void exitMultDivideExprInvalidTypeTest(StatType type) {
     Token operator = mock(Token.class);
     when(operator.getText()).thenReturn("op");
@@ -149,7 +153,9 @@ class TypeCheckerTest {
   }
 
   @ParameterizedTest
-  @EnumSource(value = StatType.class, names = {"NUMBER"})
+  @EnumSource(
+      value = StatType.class,
+      names = {"NUMBER"})
   void exitAddSubExprValidTypeTest(StatType type) {
     StatParser.ExpressionContext leftSubExpr = createSubExpr();
     StatParser.ExpressionContext rightSubExpr = createSubExpr();
@@ -167,8 +173,8 @@ class TypeCheckerTest {
 
   @ParameterizedTest
   @EnumSource(
-          value = StatType.class,
-          names = {"BOOLEAN", "VOID", "PROPERTY"})
+      value = StatType.class,
+      names = {"BOOLEAN", "VOID", "PROPERTY"})
   void exitAddSubExprInvalidTypeTest(StatType type) {
     Token operator = mock(Token.class);
     when(operator.getText()).thenReturn("op");
@@ -190,7 +196,9 @@ class TypeCheckerTest {
   }
 
   @ParameterizedTest
-  @EnumSource(value = StatType.class, names = { "VOID", "PROPERTY" })
+  @EnumSource(
+      value = StatType.class,
+      names = {"VOID", "PROPERTY"})
   void exitEqualExprInvalidTypesTest(StatType type) {
     Token operator = mock(Token.class);
     when(operator.getText()).thenReturn("op");
@@ -205,9 +213,11 @@ class TypeCheckerTest {
 
     new TypeChecker(types, listener, scope).exitEqualExpr(expr);
 
-    verify(listener).semanticError(1, 1, "left operand of 'op' expression must be of type NUMBER or BOOLEAN.");
     verify(listener)
-        .semanticError(1, 10, "right operand of 'op' expression must be of type NUMBER or BOOLEAN.");
+        .semanticError(1, 1, "left operand of 'op' expression must be of type NUMBER or BOOLEAN.");
+    verify(listener)
+        .semanticError(
+            1, 10, "right operand of 'op' expression must be of type NUMBER or BOOLEAN.");
     assertEquals(StatType.BOOLEAN, types.get(expr));
   }
 
@@ -226,12 +236,15 @@ class TypeCheckerTest {
 
     new TypeChecker(types, listener, scope).exitEqualExpr(expr);
 
-    verify(listener).semanticError(1, 1, "both operands of 'op' expression must be of the same type.");
+    verify(listener)
+        .semanticError(1, 1, "both operands of 'op' expression must be of the same type.");
     assertEquals(StatType.BOOLEAN, types.get(expr));
   }
 
   @ParameterizedTest
-  @EnumSource(value = StatType.class, names = { "NUMBER", "BOOLEAN" })
+  @EnumSource(
+      value = StatType.class,
+      names = {"NUMBER", "BOOLEAN"})
   void exitEqualExprValidTypesTest(StatType type) {
     StatParser.ExpressionContext leftSubExpr = createSubExpr(1, 1);
     StatParser.ExpressionContext rightSubExpr = createSubExpr(1, 10);
@@ -248,7 +261,9 @@ class TypeCheckerTest {
   }
 
   @ParameterizedTest
-  @EnumSource(value = StatType.class, names = { "VOID", "PROPERTY", "BOOLEAN" })
+  @EnumSource(
+      value = StatType.class,
+      names = {"VOID", "PROPERTY", "BOOLEAN"})
   void exitCompExprInvalidTypesTest(StatType type) {
     Token operator = mock(Token.class);
     when(operator.getText()).thenReturn("op");
@@ -265,12 +280,14 @@ class TypeCheckerTest {
 
     verify(listener).semanticError(1, 1, "left operand of 'op' expression must be of type NUMBER.");
     verify(listener)
-            .semanticError(1, 10, "right operand of 'op' expression must be of type NUMBER.");
+        .semanticError(1, 10, "right operand of 'op' expression must be of type NUMBER.");
     assertEquals(StatType.BOOLEAN, types.get(expr));
   }
 
   @ParameterizedTest
-  @EnumSource(value = StatType.class, names = { "NUMBER" })
+  @EnumSource(
+      value = StatType.class,
+      names = {"NUMBER"})
   void exitCompExprValidTypesTest(StatType type) {
     StatParser.ExpressionContext leftSubExpr = createSubExpr(1, 1);
     StatParser.ExpressionContext rightSubExpr = createSubExpr(1, 10);
@@ -287,7 +304,9 @@ class TypeCheckerTest {
   }
 
   @ParameterizedTest
-  @EnumSource(value = StatType.class, names = { "VOID", "PROPERTY", "NUMBER" })
+  @EnumSource(
+      value = StatType.class,
+      names = {"VOID", "PROPERTY", "NUMBER"})
   void exitLogicExprInvalidTypesTest(StatType type) {
     Token operator = mock(Token.class);
     when(operator.getText()).thenReturn("op");
@@ -302,14 +321,17 @@ class TypeCheckerTest {
 
     new TypeChecker(types, listener, scope).exitLogicExpr(expr);
 
-    verify(listener).semanticError(1, 1, "left operand of 'op' expression must be of type BOOLEAN.");
     verify(listener)
-            .semanticError(1, 10, "right operand of 'op' expression must be of type BOOLEAN.");
+        .semanticError(1, 1, "left operand of 'op' expression must be of type BOOLEAN.");
+    verify(listener)
+        .semanticError(1, 10, "right operand of 'op' expression must be of type BOOLEAN.");
     assertEquals(StatType.BOOLEAN, types.get(expr));
   }
 
   @ParameterizedTest
-  @EnumSource(value = StatType.class, names = { "BOOLEAN" })
+  @EnumSource(
+      value = StatType.class,
+      names = {"BOOLEAN"})
   void exitLogicExprValidTypesTest(StatType type) {
     StatParser.ExpressionContext leftSubExpr = createSubExpr(1, 1);
     StatParser.ExpressionContext rightSubExpr = createSubExpr(1, 10);
@@ -325,10 +347,10 @@ class TypeCheckerTest {
     assertEquals(StatType.BOOLEAN, types.get(expr));
   }
 
-
-
   @ParameterizedTest
-  @EnumSource(value = StatType.class, names = { "VOID", "PROPERTY", "NUMBER" })
+  @EnumSource(
+      value = StatType.class,
+      names = {"VOID", "PROPERTY", "NUMBER"})
   void exitNotExprInvalidTypesTest(StatType type) {
     Token operator = mock(Token.class);
     when(operator.getText()).thenReturn("op");
@@ -344,7 +366,9 @@ class TypeCheckerTest {
   }
 
   @ParameterizedTest
-  @EnumSource(value = StatType.class, names = { "BOOLEAN" })
+  @EnumSource(
+      value = StatType.class,
+      names = {"BOOLEAN"})
   void exitNotExprValidTypesTest(StatType type) {
     StatParser.ExpressionContext subExpr = createSubExpr(1, 1);
     StatParser.NotExprContext expr = mock(StatParser.NotExprContext.class);

@@ -152,8 +152,8 @@ public class TypeChecker extends StatBaseListener {
     checkNumberOrBooleanOperands(left, right, operator);
     if (leftType != rightType) {
       reportSemanticError(
-              left,
-              "both operands of '" + operator.getText() + "' expression must be of the same type.");
+          left,
+          "both operands of '" + operator.getText() + "' expression must be of the same type.");
     }
 
     types.put(ctx, StatType.BOOLEAN);
@@ -182,42 +182,49 @@ public class TypeChecker extends StatBaseListener {
   }
 
   private void checkNumberOperands(
-          StatParser.ExpressionContext left, StatParser.ExpressionContext right, Token operator) {
+      StatParser.ExpressionContext left, StatParser.ExpressionContext right, Token operator) {
     if (types.get(left) != StatType.NUMBER) {
       reportSemanticError(
-              left, "left operand of '" + operator.getText() + "' expression must be of type NUMBER.");
+          left, "left operand of '" + operator.getText() + "' expression must be of type NUMBER.");
     }
 
     if (types.get(right) != StatType.NUMBER) {
       reportSemanticError(
-              right,
-              "right operand of '" + operator.getText() + "' expression must be of type NUMBER.");
+          right,
+          "right operand of '" + operator.getText() + "' expression must be of type NUMBER.");
     }
   }
 
-  private void checkBooleanOperands(StatParser.ExpressionContext left, StatParser.ExpressionContext right, Token operator) {
+  private void checkBooleanOperands(
+      StatParser.ExpressionContext left, StatParser.ExpressionContext right, Token operator) {
     if (types.get(left) != StatType.BOOLEAN) {
       reportSemanticError(
-              left, "left operand of '" + operator.getText() + "' expression must be of type BOOLEAN.");
+          left, "left operand of '" + operator.getText() + "' expression must be of type BOOLEAN.");
     }
 
     if (types.get(right) != StatType.BOOLEAN) {
       reportSemanticError(
-              right,
-              "right operand of '" + operator.getText() + "' expression must be of type BOOLEAN.");
+          right,
+          "right operand of '" + operator.getText() + "' expression must be of type BOOLEAN.");
     }
   }
 
-  private void checkNumberOrBooleanOperands(StatParser.ExpressionContext left, StatParser.ExpressionContext right, Token operator) {
+  private void checkNumberOrBooleanOperands(
+      StatParser.ExpressionContext left, StatParser.ExpressionContext right, Token operator) {
     if (types.get(left) != StatType.BOOLEAN && types.get(left) != StatType.NUMBER) {
       reportSemanticError(
-              left, "left operand of '" + operator.getText() + "' expression must be of type NUMBER or BOOLEAN.");
+          left,
+          "left operand of '"
+              + operator.getText()
+              + "' expression must be of type NUMBER or BOOLEAN.");
     }
 
     if (types.get(right) != StatType.BOOLEAN && types.get(right) != StatType.NUMBER) {
       reportSemanticError(
-              right,
-              "right operand of '" + operator.getText() + "' expression must be of type NUMBER or BOOLEAN.");
+          right,
+          "right operand of '"
+              + operator.getText()
+              + "' expression must be of type NUMBER or BOOLEAN.");
     }
   }
 
