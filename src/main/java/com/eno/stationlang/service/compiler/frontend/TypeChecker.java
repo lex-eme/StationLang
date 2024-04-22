@@ -63,6 +63,16 @@ public class TypeChecker extends StatBaseListener {
   }
 
   @Override
+  public void enterBlock(StatParser.BlockContext ctx) {
+    // TODO: create a new scope (for blocks in if statements)
+  }
+
+  @Override
+  public void exitBlock(StatParser.BlockContext ctx) {
+    // TODO: escape from block scope
+  }
+
+  @Override
   public void exitParenExpr(StatParser.ParenExprContext ctx) {
     types.put(ctx, types.get(ctx.expression()));
   }

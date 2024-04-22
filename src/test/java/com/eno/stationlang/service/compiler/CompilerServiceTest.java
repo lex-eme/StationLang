@@ -12,24 +12,35 @@ class CompilerServiceTest {
     var res =
         service.compile(
             """
-                number x = 4;
-                number transformer = 0;
-
-                compute(number n): number {
-                  return x * n;
-                }
-
-                setup() {
-                  number z = (10 + 5) - 2;
-                  setNumber(transformer, "PowerRequired", compute(z));
-                  setBoolean(transformer, "Lock", true);
-                  number power = loadNumber(transformer, "PowerRequired");
-                  boolean on = loadBoolean(transformer, "On");
-                  if ("xxx" == "zzz") {
-                    z = 10;
-                  }
-                }
-                """);
+                        number battery = 0;
+                        number generator = 1;
+                                        
+                        number minRatio = 0.2;
+                        number maxRatio = 0.4;
+                                        
+                        setGeneratorOn(boolean on) {
+                            setBool(generator, "On", on);
+                        }
+                                        
+                        setup() {
+                            setBool(generator, "Lock", true);
+                            setGeneratorOn(false);
+                        }
+                                        
+                        update() {
+                            boolean shouldRun = false;
+                            number ratio = loadNumber(battery, "Ratio");
+                            boolean isRunning = loadBoolean(generator, "On");
+                            
+                            if (isRunning) {
+                                shouldRun = ratio > maxRatio;
+                            } else {
+                                shouldRun = ratio < minRatio;
+                            }
+                            
+                            setGeneratorOn(shouldRun);
+                        }
+                    """);
 
     res.getErrors().forEach(compilationError -> System.out.println(compilationError.message()));
   }
