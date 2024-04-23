@@ -3,10 +3,7 @@ package com.eno.stationlang.service.compiler.frontend;
 import com.eno.stationlang.parser.StatBaseListener;
 import com.eno.stationlang.parser.StatParser;
 import com.eno.stationlang.service.compiler.error.SemanticErrorListener;
-import com.eno.stationlang.service.compiler.frontend.symboltable.Function;
-import com.eno.stationlang.service.compiler.frontend.symboltable.Scope;
-import com.eno.stationlang.service.compiler.frontend.symboltable.Symbol;
-import com.eno.stationlang.service.compiler.frontend.symboltable.Variable;
+import com.eno.stationlang.service.compiler.frontend.symboltable.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
@@ -64,12 +61,12 @@ public class TypeChecker extends StatBaseListener {
 
   @Override
   public void enterBlock(StatParser.BlockContext ctx) {
-    // TODO: create a new scope (for blocks in if statements)
+    currentScope = new BaseScope(currentScope);
   }
 
   @Override
   public void exitBlock(StatParser.BlockContext ctx) {
-    // TODO: escape from block scope
+    currentScope = currentScope.getParentScope();
   }
 
   @Override

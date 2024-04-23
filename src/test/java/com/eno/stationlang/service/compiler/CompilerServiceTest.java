@@ -19,6 +19,7 @@ class CompilerServiceTest {
                         number maxRatio = 0.4;
 
                         setGeneratorOn(boolean on) {
+                            number on = 10;
                             writeBool(generator, "On", on);
                         }
 
@@ -31,13 +32,13 @@ class CompilerServiceTest {
                             boolean shouldRun = false;
                             number ratio = readNumber(battery, "Ratio");
                             boolean isRunning = readBoolean(generator, "On");
-                           \s
+
                             if (isRunning) {
                                 shouldRun = ratio > maxRatio;
                             } else {
                                 shouldRun = ratio < minRatio;
                             }
-                           \s
+
                             setGeneratorOn(shouldRun);
                         }
                     """);
