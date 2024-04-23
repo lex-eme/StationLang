@@ -1,6 +1,11 @@
 # Stationeers Language
 
-This project is a simple compiler aiming at producing MIPS code ([stationeer's version](https://stationeers-wiki.com/MIPS)).
+In [Stationeers](https://store.steampowered.com/app/544550/Stationeers/) you have the ability to control machines and
+devices with code. The game uses [MIPS](https://stationeers-wiki.com/MIPS) as it's in-game scripting language.
+MIPS is a low-level/assembly language.
+
+
+This project is a simple compiler aiming at producing MIPS code for Stationeers.
 
 ## The language
 
@@ -14,18 +19,18 @@ number minRatio = 0.2;
 number maxRatio = 0.4;
 
 setGeneratorOn(boolean on) {
-    setBool(generator, "On", on);
+    writeBool(generator, "On", on);
 }
 
 setup() {
-    setBool(generator, "Lock", true);
+    writeBool(generator, "Lock", true);
     setGeneratorOn(false);
 }
 
 update() {
     boolean shouldRun = false;
-    number ratio = loadNumber(battery, "Ratio");
-    boolean isRunning = loadBoolean(generator, "On");
+    number ratio = readNumber(battery, "Ratio");
+    boolean isRunning = readBoolean(generator, "On");
     
     if (isRunning) {
         shouldRun = ratio > maxRatio;
@@ -43,10 +48,10 @@ update() {
 2. Variables: can be defined in global or local scope.
 3. Functions: can be defined in global scope.
 4. Built-in functions to access devices connected to the IC:
-    - loadNumber(number deviceIndex, property propertyName): returns the number value associated to the property.
-    - loadBoolean(number deviceIndex, property propertyName): returns the boolean value associated to the property.
-    - setNumber(number deviceIndex, property propertyName, number value): set the number value to the property.
-    - setBoolean(number deviceIndex, property propertyName, boolean value): set the boolean value to the property.
+    - readNumber(number deviceIndex, property propertyName): returns the number value associated to the property.
+    - readBoolean(number deviceIndex, property propertyName): returns the boolean value associated to the property.
+    - writeNumber(number deviceIndex, property propertyName, number value): set the number value to the property.
+    - writeBoolean(number deviceIndex, property propertyName, boolean value): set the boolean value to the property.
     - more to come (to access slot items, to access MIPS functions, load batch, ...)
 5. setup() et update() are special functions. setup() is automatically called once at the beginning of the script.
 update() is called at the beginning of each power tick. These functions are not mandatory.

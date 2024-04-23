@@ -19,25 +19,25 @@ class CompilerServiceTest {
                         number maxRatio = 0.4;
 
                         setGeneratorOn(boolean on) {
-                            setBool(generator, "On", on);
+                            writeBool(generator, "On", on);
                         }
 
                         setup() {
-                            setBool(generator, "Lock", true);
+                            writeBool(generator, "Lock", true);
                             setGeneratorOn(false);
                         }
 
                         update() {
                             boolean shouldRun = false;
-                            number ratio = loadNumber(battery, "Ratio");
-                            boolean isRunning = loadBoolean(generator, "On");
-
+                            number ratio = readNumber(battery, "Ratio");
+                            boolean isRunning = readBoolean(generator, "On");
+                           \s
                             if (isRunning) {
                                 shouldRun = ratio > maxRatio;
                             } else {
                                 shouldRun = ratio < minRatio;
                             }
-
+                           \s
                             setGeneratorOn(shouldRun);
                         }
                     """);
