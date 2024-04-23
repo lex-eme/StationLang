@@ -5,7 +5,7 @@ import com.eno.stationlang.parser.StatParser;
 import com.eno.stationlang.service.compiler.error.CompilationError;
 import com.eno.stationlang.service.compiler.error.ErrorListener;
 import com.eno.stationlang.service.compiler.frontend.TypeChecker;
-import com.eno.stationlang.service.compiler.frontend.symboltable.GlobalScope;
+import com.eno.stationlang.service.compiler.frontend.symboltable.BaseScope;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +39,7 @@ public class CompilerService {
       return new CompilationResult("Not yet compiled.", errors);
     }
 
-    GlobalScope globalScope = new GlobalScope();
+    BaseScope globalScope = new BaseScope();
     TypeChecker typeChecker = new TypeChecker(listener, globalScope);
     ParseTreeWalker walker = new ParseTreeWalker();
     walker.walk(typeChecker, tree);

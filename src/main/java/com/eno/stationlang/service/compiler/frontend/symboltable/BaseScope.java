@@ -1,5 +1,6 @@
 package com.eno.stationlang.service.compiler.frontend.symboltable;
 
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,6 +8,11 @@ public class BaseScope implements Scope {
 
   private final Scope parent;
   private final Map<String, Symbol> symbols;
+
+  public BaseScope() {
+    this.parent = null;
+    this.symbols = new HashMap<>();
+  }
 
   public BaseScope(Scope parent) {
     this.parent = parent;
