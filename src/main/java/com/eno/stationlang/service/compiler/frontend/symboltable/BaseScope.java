@@ -1,6 +1,5 @@
 package com.eno.stationlang.service.compiler.frontend.symboltable;
 
-
 import java.util.HashMap;
 import java.util.Map;
 

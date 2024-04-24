@@ -60,6 +60,21 @@ public class TypeChecker extends StatBaseListener {
   }
 
   @Override
+  public void exitParameters(StatParser.ParametersContext ctx) {
+    for (var varDef : ctx.varDef()) {
+      StatType type;
+
+      if (varDef.type().BOOLEANTYPE() != null) type = StatType.BOOLEAN;
+      else if (varDef.type().NUMBERTYPE() != null) type = StatType.NUMBER;
+      else type = null;
+
+      if (currentScope instanceof Function function) {
+        function.addParameter(type);
+      }
+    }
+  }
+
+  @Override
   public void enterBlock(StatParser.BlockContext ctx) {
     currentScope = new BaseScope(currentScope);
   }
@@ -99,10 +114,38 @@ public class TypeChecker extends StatBaseListener {
 
     if (symbol instanceof Function function) {
       types.put(ctx, function.getType());
-      System.out.println("TODO: check arguments type and count.");
+
+      if (ctx.expression().size() != function.arity()) {
+        reportSemanticError(
+            ctx,
+            "function '"
+                + function.getName()
+                + "' expects "
+                + function.arity()
+                + " arguments but found "
+                + ctx.expression().size()
+                + ".");
+        return;
+      }
+
+      var paramTypes = function.getParamTypes();
+      var expressions = ctx.expression();
+      for (int i = 0; i < paramTypes.size(); i++) {
+        if (paramTypes.get(i) != types.get(expressions.get(i))) {
+          reportSemanticError(
+              expressions.get(i),
+              "argument must be of type "
+                  + paramTypes.get(i)
+                  + " but found "
+                  + types.get(expressions.get(i))
+                  + ".");
+        }
+      }
+
       return;
     }
 
+    types.put(ctx, symbol.getType());
     reportSemanticError(ctx, "can only call functions.");
   }
 
