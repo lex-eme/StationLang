@@ -128,14 +128,13 @@ public class TypeChecker extends StatBaseListener {
         return;
       }
 
-      var paramTypes = function.getParamTypes();
       var expressions = ctx.expression();
-      for (int i = 0; i < paramTypes.size(); i++) {
-        if (paramTypes.get(i) != types.get(expressions.get(i))) {
+      for (int i = 0; i < function.arity(); i++) {
+        if (function.getParamType(i) != types.get(expressions.get(i))) {
           reportSemanticError(
               expressions.get(i),
               "argument must be of type "
-                  + paramTypes.get(i)
+                  + function.getParamType(i)
                   + " but found "
                   + types.get(expressions.get(i))
                   + ".");

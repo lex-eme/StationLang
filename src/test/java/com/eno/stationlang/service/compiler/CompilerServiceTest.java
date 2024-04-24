@@ -1,7 +1,5 @@
 package com.eno.stationlang.service.compiler;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
 
 class CompilerServiceTest {
@@ -19,12 +17,11 @@ class CompilerServiceTest {
                         number maxRatio = 0.4;
 
                         setGeneratorOn(boolean on) {
-                            number on = 10;
-                            writeBool(generator, "On", on);
+                            writeBoolean(generator, "On", on);
                         }
 
                         setup() {
-                            writeBool(generator, "Lock", true);
+                            writeBoolean(generator, "Lock", true);
                             setGeneratorOn(false);
                         }
 
@@ -43,6 +40,6 @@ class CompilerServiceTest {
                         }
                     """);
 
-    res.getErrors().forEach(compilationError -> System.out.println(compilationError.message()));
+    res.errors().forEach(compilationError -> System.out.println(compilationError.message()));
   }
 }

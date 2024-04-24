@@ -19,11 +19,11 @@ number minRatio = 0.2;
 number maxRatio = 0.4;
 
 setGeneratorOn(boolean on) {
-    writeBool(generator, "On", on);
+    writeBoolean(generator, "On", on);
 }
 
 setup() {
-    writeBool(generator, "Lock", true);
+    writeBoolean(generator, "Lock", true);
     setGeneratorOn(false);
 }
 
