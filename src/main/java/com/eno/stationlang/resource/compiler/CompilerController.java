@@ -24,8 +24,8 @@ public class CompilerController {
     var res = compilerService.compile(code.code());
 
     return new ResponseDTO(
-        res.getCompiledCode(),
-        res.getErrors().stream()
+        res.compiledCode(),
+        res.errors().stream()
             .map(
                 compilationError ->
                     new ErrorDTO(

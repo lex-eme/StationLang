@@ -25,8 +25,8 @@ public class Function extends BaseScope implements Symbol {
     return paramTypes.size();
   }
 
-  public List<StatType> getParamTypes() {
-    return paramTypes;
+  public StatType getParamType(int index) {
+    return paramTypes.get(index);
   }
 
   @Override
