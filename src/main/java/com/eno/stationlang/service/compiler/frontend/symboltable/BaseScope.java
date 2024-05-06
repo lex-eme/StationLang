@@ -7,6 +7,7 @@ public class BaseScope implements Scope {
 
   private final Scope parent;
   private final Map<String, Symbol> symbols;
+  private int nextIndex = 0;
 
   public BaseScope() {
     this.parent = null;
@@ -24,6 +25,10 @@ public class BaseScope implements Scope {
       throw new RuntimeException("Symbol '" + symbol.getName() + "' already exists in scope.");
     }
 
+    if (symbol instanceof Variable variable) {
+      variable.setIndexInScope(nextIndex);
+      nextIndex += 1;
+    }
     symbols.put(symbol.getName(), symbol);
   }
 

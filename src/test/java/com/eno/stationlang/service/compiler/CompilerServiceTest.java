@@ -10,19 +10,15 @@ class CompilerServiceTest {
     var res =
         service.compile(
             """
-                        number battery = 0;
-                        number generator = 1;
+                        device battery = 0;
+                        device generator = 1;
 
-                        number minRatio = 0.2;
-                        number maxRatio = 0.4;
-
-                        setGeneratorOn(boolean on) {
-                            writeBoolean(generator, "On", on);
-                        }
+                        const number minRatio = 0.2;
+                        const number maxRatio = 0.4;
 
                         setup() {
                             writeBoolean(generator, "Lock", true);
-                            setGeneratorOn(false);
+                            writeBoolean(generator, "On", false);
                         }
 
                         update() {
@@ -31,14 +27,44 @@ class CompilerServiceTest {
                             boolean isRunning = readBoolean(generator, "On");
 
                             if (isRunning) {
-                                shouldRun = ratio > maxRatio;
+                                shouldRun = ratio < maxRatio;
                             } else {
                                 shouldRun = ratio < minRatio;
                             }
 
-                            setGeneratorOn(shouldRun);
+                            writeBoolean(generator, "On", shouldRun);
                         }
                     """);
+
+    res.errors().forEach(compilationError -> System.out.println(compilationError.message()));
+  }
+
+  @Test
+  void testCompile2() {
+    CompilerService service = new CompilerService();
+    var res =
+        service.compile(
+            """
+                                device inLine = 0;
+                                device outLine = 1;
+                                device transformer = 2;
+
+                                setup() {
+                                  writeBoolean(transformer, "On", false);
+                                }
+
+                                update() {
+                                  number requiredPower = readNumber(transformer, "RequiredPower");
+
+                                  number x = readNumber(inLine, "PowerPotential") - readNumber(outLine, "PowerActual");
+
+                                  if (readBoolean(transformer, "On")) {
+                                    x = x + requiredPower;
+                                  }
+
+                                  writeBoolean(transformer, "On", x > requiredPower);
+                                }
+                            """);
 
     res.errors().forEach(compilationError -> System.out.println(compilationError.message()));
   }

@@ -16,7 +16,7 @@ class GlobalScopeTest {
     Function function = assertInstanceOf(Function.class, symbol);
     assertEquals(StatType.NUMBER, function.getType());
     assertEquals(2, function.arity());
-    assertEquals(StatType.NUMBER, function.getParamType(0));
+    assertEquals(StatType.DEVICE, function.getParamType(0));
     assertEquals(StatType.PROPERTY, function.getParamType(1));
   }
 
@@ -29,7 +29,7 @@ class GlobalScopeTest {
     Function function = assertInstanceOf(Function.class, symbol);
     assertEquals(StatType.BOOLEAN, function.getType());
     assertEquals(2, function.arity());
-    assertEquals(StatType.NUMBER, function.getParamType(0));
+    assertEquals(StatType.DEVICE, function.getParamType(0));
     assertEquals(StatType.PROPERTY, function.getParamType(1));
   }
 
@@ -42,7 +42,7 @@ class GlobalScopeTest {
     Function function = assertInstanceOf(Function.class, symbol);
     assertEquals(StatType.VOID, function.getType());
     assertEquals(3, function.arity());
-    assertEquals(StatType.NUMBER, function.getParamType(0));
+    assertEquals(StatType.DEVICE, function.getParamType(0));
     assertEquals(StatType.PROPERTY, function.getParamType(1));
     assertEquals(StatType.NUMBER, function.getParamType(2));
   }
@@ -56,7 +56,7 @@ class GlobalScopeTest {
     Function function = assertInstanceOf(Function.class, symbol);
     assertEquals(StatType.VOID, function.getType());
     assertEquals(3, function.arity());
-    assertEquals(StatType.NUMBER, function.getParamType(0));
+    assertEquals(StatType.DEVICE, function.getParamType(0));
     assertEquals(StatType.PROPERTY, function.getParamType(1));
     assertEquals(StatType.BOOLEAN, function.getParamType(2));
   }

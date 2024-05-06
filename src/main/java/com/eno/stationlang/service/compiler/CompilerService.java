@@ -2,6 +2,7 @@ package com.eno.stationlang.service.compiler;
 
 import com.eno.stationlang.parser.StatLexer;
 import com.eno.stationlang.parser.StatParser;
+import com.eno.stationlang.service.compiler.backend.CodeGenerator;
 import com.eno.stationlang.service.compiler.error.CompilationError;
 import com.eno.stationlang.service.compiler.error.ErrorListener;
 import com.eno.stationlang.service.compiler.frontend.TypeChecker;
@@ -44,6 +45,8 @@ public class CompilerService {
     TypeChecker typeChecker = new TypeChecker(listener, globalScope);
     ParseTreeWalker walker = new ParseTreeWalker();
     walker.walk(typeChecker, tree);
+    CodeGenerator codeGenerator = new CodeGenerator(globalScope);
+    codeGenerator.visit(tree);
 
     return new CompilationResult("Not yet compiled.", errors);
   }

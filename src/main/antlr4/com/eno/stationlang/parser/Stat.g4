@@ -1,8 +1,10 @@
 grammar Stat;
 
 program : declaration* EOF;
-declaration : varDecl | funcDecl;
+declaration : varDecl | funcDecl | constDecl | deviceDecl;
 varDecl : varDef (AFFECT expression)? SEMICOLON;
+constDecl : CONST NUMBERTYPE ID AFFECT NUMBER SEMICOLON;
+deviceDecl : DEVICE ID AFFECT NUMBER SEMICOLON;
 funcDecl : ID LPAR parameters? RPAR (COLON type)? block;
 
 type : BOOLEANTYPE
@@ -14,7 +16,7 @@ varDef : type ID;
 block: LBRACES (statement | varDecl)* RBRACES;
 
 statement : IF LPAR condition=expression RPAR block (ELSE block)?   #ifStmt
-          | left=expression AFFECT right=expression SEMICOLON       #assignStmt
+          | ID AFFECT right=expression SEMICOLON                    #assignStmt
           | expression SEMICOLON                                    #exprStmt
           | RETURN expression SEMICOLON                             #returnStmt
           ;
@@ -69,6 +71,8 @@ FALSE: 'false';
 AND: '&&';
 OR: '||';
 
+CONST: 'const';
+DEVICE: 'device';
 BOOLEANTYPE: 'boolean';
 NUMBERTYPE: 'number';
 

@@ -24,6 +24,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <antlr.version>4.13.1</antlr.version>
     <spotify.fmt.version>2.23</spotify.fmt.version>
+    <ST4.version>4.3.4</ST4.version>
   </properties>
 
   <dependencies>
@@ -37,6 +38,11 @@
       <groupId>org.antlr</groupId>
       <artifactId>antlr4-runtime</artifactId>
       <version>${antlr.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.antlr</groupId>
+      <artifactId>ST4</artifactId>
+      <version>${ST4.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>

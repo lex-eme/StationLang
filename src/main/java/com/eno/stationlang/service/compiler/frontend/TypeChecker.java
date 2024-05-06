@@ -38,6 +38,27 @@ public class TypeChecker extends StatBaseListener {
   }
 
   @Override
+  public void exitConstDecl(StatParser.ConstDeclContext ctx) {
+    Constant constant = new Constant(ctx.ID().getText(), StatType.NUMBER, ctx.NUMBER().getText());
+    currentScope.define(constant);
+  }
+
+  @Override
+  public void exitDeviceDecl(StatParser.DeviceDeclContext ctx) {
+    try {
+      int deviceIndex = Integer.parseInt(ctx.NUMBER().getText());
+      if (deviceIndex < 0 || deviceIndex > 5) {
+        reportSemanticError(ctx, "device value must be between 0 and 5 but found: " + deviceIndex);
+      }
+    } catch (NumberFormatException e) {
+      reportSemanticError(ctx, "device value must be an integer.");
+    }
+
+    Device device = new Device(ctx.ID().getText(), StatType.DEVICE, ctx.NUMBER().getText());
+    currentScope.define(device);
+  }
+
+  @Override
   public void enterFuncDecl(StatParser.FuncDeclContext ctx) {
     StatType type;
 

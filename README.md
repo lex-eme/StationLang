@@ -33,7 +33,7 @@ update() {
     boolean isRunning = readBoolean(generator, "On");
     
     if (isRunning) {
-        shouldRun = ratio > maxRatio;
+        shouldRun = ratio < maxRatio;
     } else {
         shouldRun = ratio < minRatio;
     }
@@ -58,3 +58,29 @@ update() is called at the beginning of each power tick. These functions are not 
 
 ### Documentation
 TBD
+
+```
+define maxRatio 0.4
+define minRatio 0.2
+
+setup:
+s d1 Lock 1
+
+update:
+yield
+
+move r0 0
+l r1 d0 Ratio
+l r2 d1 On
+
+beqz r2 else
+slt r0 r1 maxRatio
+j endif
+
+else:
+slt r0 r1 minRatio
+
+endif:
+s d1 On r0
+j update
+```

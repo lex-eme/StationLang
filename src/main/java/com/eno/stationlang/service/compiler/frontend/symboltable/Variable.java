@@ -6,10 +6,16 @@ public class Variable implements Symbol {
 
   private final String name;
   private final StatType type;
+  private int indexInScope;
 
   public Variable(String name, StatType type) {
+    this(name, type, 0);
+  }
+
+  public Variable(String name, StatType type, int indexInScope) {
     this.name = name;
     this.type = type;
+    this.indexInScope = indexInScope;
   }
 
   @Override
@@ -20,5 +26,13 @@ public class Variable implements Symbol {
   @Override
   public StatType getType() {
     return type;
+  }
+
+  void setIndexInScope(int index) {
+    indexInScope = index;
+  }
+
+  public int getIndexInScope() {
+    return indexInScope;
   }
 }

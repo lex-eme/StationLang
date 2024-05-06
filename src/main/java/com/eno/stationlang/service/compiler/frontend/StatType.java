@@ -4,5 +4,6 @@ public enum StatType {
   NUMBER,
   BOOLEAN,
   VOID,
+  DEVICE,
   PROPERTY
 }
